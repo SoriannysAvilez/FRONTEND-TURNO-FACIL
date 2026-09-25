@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
+import Header from "../components/Header.astro";
 
 const doctores = [
     {
@@ -36,10 +37,12 @@ const doctores = [
 
 <Layout>
 
-    <section class="bg-gray-100 px-6 py-12">
+    <Header />
+
+    <section id="especialidades" class="bg-gray-100 px-6 py-12">
 
         <div class="flex flex-1 flex-col">
-            <h2 class="mb-2 text-center text-3xl font-bold text-blue-900">
+            <h2 class="mb-2 text-center text-3xl font-bold text-black">
                 NUESTRAS ESPECIALIDADES
             </h2>
             <span class= "mb-8 p-2 text-gray-600 items-center text-center">
