@@ -1,0 +1,58 @@
+---
+import headerLinks from '../data/headerLinks.json';
+import  MenuHamb  from './Icons/MenuHamb.astro';
+---
+
+<header class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
+  
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+    
+        
+        <a 
+        href="#quienes-somos" 
+        class="flex items-center gap-0 text-3xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded-md"
+        aria-label="Página principal"
+        >
+        <img src="/public/logo.png" class="w-14 h-14">
+        <span class="text-blue-900">Odonto</span>Nova
+        </a>
+
+        
+        <button
+        id="menu-toggle"
+        type="button"
+        class="inline-flex items-center justify-center rounded-lg p-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 md:hidden"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        aria-label="Abrir menú de navegación"
+        >
+
+            <MenuHamb class="h-6 w-6" />
+
+        </button>
+
+    
+        <nav 
+        id="mobile-menu"
+        class="hidden w-full md:flex md:w-auto md:items-center"
+        aria-label="Navegación principal"
+        >
+        <ul class="mt-4 flex flex-col space-y-2 font-medium md:mt-0 md:flex-row md:space-x-8 md:space-y-0">
+            {
+            headerLinks.map((link) => (
+                <li>
+                <a
+                    href={link.path}
+                    title={link.alt}
+                    class="block rounded-md px-3 py-2 font-semibold text-black transition-colors hover:text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2 md:p-0 md:text-sm md:hover:bg-transparent md:hover:text-blue-900"
+                >
+                    {link.label}
+                </a>
+                </li>
+            ))
+            }
+        </ul>
+        </nav>
+
+  </div>
+</header>

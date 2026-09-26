@@ -1,0 +1,5 @@
+[
+  { "label": "QUIENES SOMOS", "path": "#quienes-somos", "alt": "Conocer más sobre nosotros" },
+  { "label": "ESPECIALIDADES", "path": "#especialidades", "alt": "Ver especialidades médicas" },
+  { "label": "CONTACTO", "path": "#contacto", "alt": "Ir a la sección de contacto" }
+]

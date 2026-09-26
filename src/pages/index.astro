@@ -1,11 +1,72 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card.astro";
+import Header from "../components/Header.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const doctores = [
+    {
+        id: 1,
+        imagen: "https://static.wixstatic.com/media/7869d1_f6a06730d1ae4fce944281316616281a~mv2.jpg/v1/fill/w_568,h_332,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/7869d1_f6a06730d1ae4fce944281316616281a~mv2.jpg",
+        titulo: "ORTODONCIA",
+        nombre: "Dr. Carlos Ramírez",
+        descripcion: "Especialista en Ortodoncia y tratamientos de alineación dental."
+    },
+    {
+        id: 2,
+        imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTh8Gw9GL0rKnSA4YdVxxB7YVdXQYoFXM5QKmyWy5Sc-w&s=10",
+        titulo: "ODONTOLOGÍA ESTÉTICA",
+        nombre:"Dra. María López",
+        descripcion: "Especialista en Odontología Estética y Blanqueamiento Dental."
+    },
+    {
+        id: 3,
+        imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToBi4u5jGK1oSBYPKIsS4tfTzUQUM10exl7djyMQXOf_mR1WiJyvG0tYg&s=10",
+        titulo: "IMPLANTOLOGÍA Y REHABILITACION ORAL",
+        nombre:"Dr. Juan Torres",
+        descripcion: "Especialista en implantes dentales y rehabilitación de piezas dentales perdidas o dañadas."
+    },
+    {
+        id: 4,
+        imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0j-RfPoX0KSeEymGu91hHS5lPAOoXDcZXm_WEFpL_gQ&s=10",
+        titulo: "ODONTOPEDIATRÍA",
+        nombre: "Dra. Mary Quispe",
+        descripcion: "Especialista Atención odontológica especializada para bebés, niños y adolescentes, enfocada en el cuidado y prevención de la salud bucal."
+    }
+];
 ---
 
 <Layout>
-	<Welcome />
+
+    <Header />
+
+    <section id="especialidades" class="bg-gray-100 px-6 py-12">
+
+        <div class="flex flex-1 flex-col">
+            <h2 class="mb-2 text-center text-3xl font-bold text-black">
+                NUESTRAS ESPECIALIDADES
+            </h2>
+            <span class= "mb-8 p-2 text-gray-600 items-center text-center">
+                    Tratamientos diseñados para cada necesidad, con la tecnologia y experiencia que mereces.
+            </span>
+        </div>
+
+        <div class="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+            {
+                doctores.map((doctor) => (
+                    <Card
+                        imagen={doctor.imagen}
+                        titulo={doctor.titulo}
+                        nombre={doctor.nombre}
+                        descripcion={doctor.descripcion}
+                    >
+                        
+                    </Card>
+                ))
+            }
+
+        </div>
+
+    </section>
+
 </Layout>
