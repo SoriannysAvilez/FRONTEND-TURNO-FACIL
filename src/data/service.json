@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Limpieza dental",
+    "description": "Profilaxis y remoción de sarro para mantener dientes y encías sanos.",
+    "duration_min": 45,
+    "price": 80,
+    "active": true,
+    "created_at": "2026-09-25T09:00:00-05:00"
+  },
+  {
+    "id": 2,
+    "name": "Consulta odontológica general",
+    "description": "Evaluación completa de la salud bucal y plan de tratamiento.",
+    "duration_min": 30,
+    "price": 50,
+    "active": true,
+    "created_at": "2026-09-25T09:00:00-05:00"
+  },
+  {
+    "id": 3,
+    "name": "Blanqueamiento dental",
+    "description": "Aclaramiento del tono de los dientes con gel profesional en consultorio.",
+    "duration_min": 60,
+    "price": 350,
+    "active": true,
+    "created_at": "2026-09-25T09:00:00-05:00"
+  },
+  {
+    "id": 4,
+    "name": "Evaluación de ortodoncia",
+    "description": "Diagnóstico de alineación dental y opciones de brackets o alineadores.",
+    "duration_min": 40,
+    "price": 70,
+    "active": true,
+    "created_at": "2026-09-25T09:00:00-05:00"
+  },
+  {
+    "id": 5,
+    "name": "Curación con resina",
+    "description": "Tratamiento de caries y restauración de la pieza con resina estética.",
+    "duration_min": 45,
+    "price": 120,
+    "active": true,
+    "created_at": "2026-09-25T09:00:00-05:00"
+  },
+  {
+    "id": 6,
+    "name": "Extracción dental simple",
+    "description": "Retiro de una pieza dental con anestesia local.",
+    "duration_min": 30,
+    "price": 100,
+    "active": true,
+    "created_at": "2026-09-25T09:00:00-05:00"
+  },
+  {
+    "id": 7,
+    "name": "Odontopediatría",
+    "description": "Atención dental preventiva y correctiva para niños y adolescentes.",
+    "duration_min": 30,
+    "price": 60,
+    "active": true,
+    "created_at": "2026-09-25T09:00:00-05:00"
+  },
+  {
+    "id": 8,
+    "name": "Evaluación de implante dental",
+    "description": "Estudio para reemplazar piezas perdidas con implantes de titanio.",
+    "duration_min": 60,
+    "price": 150,
+    "active": false,
+    "created_at": "2026-09-25T09:00:00-05:00"
+  }
+]
