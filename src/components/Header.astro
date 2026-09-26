@@ -1,6 +1,8 @@
 ---
 import headerLinks from '../data/headerLinks.json';
 import  MenuHamb  from './Icons/MenuHamb.astro';
+import logo from '../assets/logo.png';
+import Image from 'astro/components/Image.astro';
 ---
 
 <header class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
@@ -13,7 +15,7 @@ import  MenuHamb  from './Icons/MenuHamb.astro';
         class="flex items-center gap-0 text-3xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded-md"
         aria-label="Página principal"
         >
-        <img src="/public/logo.png" class="w-14 h-14">
+        <Image src={logo} class="w-14 h-14" alt="sss" />
         <span class="text-blue-900">Odonto</span>Nova
         </a>
 
