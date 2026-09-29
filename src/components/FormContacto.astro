@@ -1,27 +1,136 @@
-<form>
-  <label for="nombre">Nombre</label>
-  <input id="nombre" name="nombre" type="text" required />
 
-  <label for="apellidos">Apellidos</label>
-  <input id="apellidos" name="apellidos" type="text" required />
+<form class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-blue-100 p-6 md:p-8">
 
-  <label for="email">Correo electrónico</label>
-  <input id="email" name="email" type="email" required />
 
-  <label for="telefono">Número de teléfono</label>
-  <input id="telefono" name="telefono" type="tel" pattern="[0-9]{9}" required />
+  <div class="mb-7 text-center">
+    <h2 class="text-blue-900 md:text-3xl font-bold ">
+      Reserva tu cita
+    </h2>
+    <p class="mt-2 text-sm text-slate-500">
+      Completa tus datos y nos pondremos en contacto contigo
+    </p>
+  </div>
 
-  <label for="servicio">Servicio</label>
-  <select id="servicio" name="servicio" required>
-    <option value="">Selecciona un servicio</option>
-    <option>Ortodoncia</option>
-    <option>Odontología estética</option>
-    <option>Implantología y rehabilitación oral</option>
-    <option>Odontopediatría</option>
-  </select>
 
-  <label for="fecha">Fecha</label>
-  <input id="fecha" name="fecha" type="date" required />
 
-  <button type="submit">Enviar</button>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+
+
+
+    <div>
+      <label for="nombre" class="block mb-2 text-blue-950 text-sm font-semibold ">
+        Nombre
+      </label>
+      <input
+        id="nombre"
+        name="nombre"
+        type="text"
+        placeholder="Ingresa tu nombre"
+        required
+        class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+      />
+    </div>
+
+
+    <div>
+      <label for="apellidos" class="block mb-2 text-blue-950 text-sm font-semibold ">
+        Apellidos
+      </label>
+      <input
+        id="apellidos"
+        name="apellidos"
+        type="text"
+        placeholder="Ingresa tus apellidos"
+        required
+        class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+      />
+    </div>
+
+
+    <div>
+      <label for="email" class="block mb-2 text-blue-950 text-sm font-semibold">
+        Correo electrónico
+      </label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        placeholder="ejemplo@correo.com"
+        required
+        class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+      />
+    </div>
+
+
+    <div>
+      <label for="telefono" class="block mb-2 text-blue-950 text-sm font-semibold ">
+        Número de teléfono
+      </label>
+      <input
+        id="telefono"
+        name="telefono"
+        type="tel"
+        placeholder="999 999 999"
+        pattern="[0-9]{9}"
+        required
+        class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+      />
+    </div>
+
+
+    <div>
+      <label for="servicio" class="block mb-2 text-sm font-semibold text-blue-950">
+        Servicio
+      </label>
+      <select
+        id="servicio"
+        name="servicio"
+        required
+        class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+      >
+        <option value="">Selecciona un servicio</option>
+        <option>Ortodoncia</option>
+        <option>Odontología estética</option>
+        <option>Implantología y rehabilitación oral</option>
+        <option>Odontopediatría</option>
+      </select>
+    </div>
+
+
+    <div>
+      <label for="fecha" class="block mb-2 text-sm font-semibold text-blue-950">
+        Fecha
+      </label>
+      <input
+        id="fecha"
+        name="fecha"
+        type="date"
+        required
+        class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+      />
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="mt-7">
+    <button
+      type="submit"
+      class="w-full rounded-lg bg-blue-700 px-6 py-3.5 text-sm font-semibold text-white shadow-md shadow-blue-200 transition hover:bg-blue-900 hover:shadow-lg"
+    >
+      Solicitar cita
+    </button>
+  </div>
+
+
+
+
+  <p class="mt-4 text-center text-xs text-slate-400">
+    Nos comunicaremos contigo para confirmar tu cita.
+  </p>
 </form>
