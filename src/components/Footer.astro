@@ -2,6 +2,9 @@
 import links from '../data/headerLinks.json';
 import FormContacto from './FormContacto.astro';
 const anio = new Date().getFullYear();
+import Phone from "/iconsPhone.astro";
+import Email from "/icons/Email.astro";
+import Location from "/icons/Location.astro";
 ---
 
 <footer id="contacto" class="bg-linear-to-br from-slate-950 via-blue-950 to-slate-800 text-white">
@@ -19,31 +22,29 @@ const anio = new Date().getFullYear();
         Nuestro equipo te contactará a la brevedad.
       </p>
 
-      <h3 class="mt-12 text-xl font-semibold">Encuéntranos</h3>
+      
+    </div>
+
+    <div>
+    <h3 class="mt-12 text-xl font-semibold">Encuéntranos</h3>
 
       <ul class="mt-2">
         <li class="flex items-center gap-3 mt-4 text-sm text-slate-200">
           <span class="w-8 h-8 rounded-md border border-white/30 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5">
-              <rect x="7" y="2" width="10" height="20" rx="2" /><path d="M11 18h2" />
-            </svg>
-          </span>
+  <Phone />
+</span>
           +51 918 070 548
         </li>
         <li class="flex items-center gap-3 mt-4 text-sm text-slate-200">
           <span class="w-8 h-8 rounded-md border border-white/30 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5">
-              <rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" />
-            </svg>
-          </span>
+  <Email />
+</span>
           odontonovax@gmail.com
         </li>
         <li class="flex items-center gap-3 mt-4 text-sm text-slate-200">
           <span class="w-8 h-8 rounded-md border border-white/30 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5">
-              <path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z" /><circle cx="12" cy="9" r="2.5" />
-            </svg>
-          </span>
+  <Location />
+</span>
           Av. Nomada 5962
         </li>
       </ul>
@@ -53,7 +54,9 @@ const anio = new Date().getFullYear();
 
 
 
-    <FormContacto />
+
+
+
 
   </div>
 
