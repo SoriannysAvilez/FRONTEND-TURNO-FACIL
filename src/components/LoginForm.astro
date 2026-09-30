@@ -1,0 +1,112 @@
+---
+// src/components/LoginForm.astro
+// Componente de formulario de login. La lógica de fetch va en el <script> de abajo
+// (se ejecuta en el navegador, Astro no la procesa en el servidor).
+
+interface Props {
+  apiUrl?: string; // URL base del backend
+  registroHref?: string; // ruta de la página de registro
+}
+
+const { apiUrl = "http://localhost:3000", registroHref = "/registro" } = Astro.props;
+---
+
+<form id="formLogin" class="max-w-sm mx-auto flex flex-col gap-4 p-6 border rounded-lg" data-api-url={apiUrl}>
+  <h2 class="text-lg font-semibold text-slate-800">Iniciar sesión</h2>
+
+  <div class="flex flex-col gap-1">
+    <label for="email" class="text-sm text-slate-600">Email</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      class="border rounded-md px-3 py-2 text-sm"
+      placeholder="tucorreo@ejemplo.com"
+    />
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="password" class="text-sm text-slate-600">Contraseña</label>
+    <input
+      type="password"
+      id="password"
+      name="password"
+      required
+      class="border rounded-md px-3 py-2 text-sm"
+      placeholder="••••••••"
+    />
+  </div>
+
+  <p id="errorLogin" class="text-sm text-red-600 hidden"></p>
+
+  <!-- Botón principal: iniciar sesión -->
+  <button
+    type="submit"
+    class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+  >
+    Ingresar
+  </button>
+
+  <!-- Enlace secundario: registro para usuarios sin cuenta -->
+  <p class="text-sm text-slate-600 text-center">
+    ¿No tienes cuenta?
+    <a href={registroHref} class="text-indigo-600 hover:underline font-medium">
+      Regístrate
+    </a>
+  </p>
+</form>
+
+<script>
+  // Se ejecuta en el navegador. Envía las credenciales a POST /auth/login.
+  const form = document.getElementById("formLogin") as HTMLFormElement;
+  const errorEl = document.getElementById("errorLogin") as HTMLParagraphElement;
+  const botonSubmit = form.querySelector("button[type='submit']") as HTMLButtonElement;
+  const apiUrl = form.dataset.apiUrl;
+
+  function mostrarError(mensaje: string) {
+    errorEl.textContent = mensaje;
+    errorEl.classList.remove("hidden");
+  }
+
+  function ocultarError() {
+    errorEl.classList.add("hidden");
+  }
+
+  form.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    ocultarError();
+
+    const email = (form.querySelector("#email") as HTMLInputElement).value.trim();
+    const password = (form.querySelector("#password") as HTMLInputElement).value;
+
+    botonSubmit.disabled = true;
+    botonSubmit.textContent = "Ingresando...";
+
+    try {
+      const respuesta = await fetch(`${apiUrl}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const datos = await respuesta.json();
+
+      if (!respuesta.ok) {
+        mostrarError(datos.error?.mensaje ?? "No se pudo iniciar sesión");
+        return;
+      }
+
+      // Guarda el token para usarlo en peticiones autenticadas (ej: /reservas, /auth/yo)
+      localStorage.setItem("tf_token", datos.token);
+      localStorage.setItem("tf_usuario", JSON.stringify(datos.usuario));
+
+      window.location.href = "/"; // redirige a donde corresponda tras el login
+    } catch (error) {
+      mostrarError("No se pudo conectar con el servidor");
+    } finally {
+      botonSubmit.disabled = false;
+      botonSubmit.textContent = "Ingresar";
+    }
+  });
+</script>
