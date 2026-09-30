@@ -1,0 +1,77 @@
+---
+import links from '../data/headerLinks.json';
+import FormContacto from './FormContacto.astro';
+const anio = new Date().getFullYear();
+import Phone from "./Icons/Phone.astro";
+import Email from "./Icons/Email.astro";
+import Location from "./Icons/Location.astro";
+---
+
+<footer id="contacto" class="bg-linear-to-br from-slate-950 via-blue-950 to-slate-800 text-white">
+  <div class="max-w-6xl mx-auto py-16 grid gap-12 lg:grid-cols-2 items-start">
+
+    <div>
+      <p class="text-xs text-slate-400 mb-4">Inicio / Agenda una cita</p>
+
+      <h2 class="font-display italic text-4xl md:text-6xl">
+        Tu sonrisa empieza con una cita
+      </h2>
+
+      <p class="mt-6 text-slate-300">
+        Agenda tu evaluación gratuita y déjanos diseñar el tratamiento ideal para ti.
+        Nuestro equipo te contactará a la brevedad.
+      </p>
+
+          <h3 class="mt-12 text-xl font-semibold">Encuéntranos</h3>
+
+      <ul class="mt-2">
+        <li class="flex items-center gap-3 mt-4 text-sm text-slate-200">
+          <span class="w-8 h-8 rounded-md border border-white/30 flex items-center justify-center">
+  <Phone />
+</span>
+          +51 918 070 548
+        </li>
+        <li class="flex items-center gap-3 mt-4 text-sm text-slate-200">
+          <span class="w-8 h-8 rounded-md border border-white/30 flex items-center justify-center">
+  <Email />
+</span>
+          odontonovax@gmail.com
+        </li>
+        <li class="flex items-center gap-3 mt-4 text-sm text-slate-200">
+          <span class="w-8 h-8 rounded-md border border-white/30 flex items-center justify-center">
+  <Location />
+</span>
+          Av. Nomada 5962
+        </li>
+      </ul>
+
+      
+    </div>
+
+    <FormContacto/>
+
+
+
+
+
+
+
+
+
+  </div>
+
+
+
+
+
+  <div class="border-t border-white/10">
+    <div class="px-20 py-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-400">
+      <nav class="flex gap-5">
+        {links.map(link => (
+          <a href={link.path} title={link.alt} class="hover:text-white transition">{link.label}</a>
+        ))}
+      </nav>
+      <p>© {anio} Odonto Nova. Todos los derechos reservados a TurnoFacil.</p>
+    </div>
+  </div>
+</footer>
