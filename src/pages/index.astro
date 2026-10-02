@@ -1,23 +1,19 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
-import QuinesSomos  from "../components/Sections/QuienesSomos.astro";
-import Especialidades  from "../components/Sections/Especialidades.astro";
+import QuinesSomos from "../components/Sections/QuienesSomos.astro";
+import Especialidades from "../components/Sections/Especialidades.astro";
 import Contacto from "../components/Sections/Contacto.astro";
-import Footer  from "../components/Footer.astro";
-
+import Footer from "../components/Footer.astro";
+import Main from "../components/Main.astro";
 ---
 
 <Layout>
-
-    <Header />
-
+  <Header />
+  <Main>
     <QuinesSomos />
-
     <Especialidades />
-
     <Contacto />
-
-    <Footer />
-
+  </Main>
+  <Footer />
 </Layout>

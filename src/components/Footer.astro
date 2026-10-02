@@ -1,18 +1,25 @@
 ---
-import links from '../data/headerLinks.json';
+import links from "../data/headerLinks.json";
 const anio = new Date().getFullYear();
 ---
 
-    <footer class="border-t border-white/10 bg-linear-to-br from-slate-950 via-blue-950 to-slate-800">
-
-        <div class="px-20 py-6 flex flex-col md:flex-row items-center justify-between text-xs text-slate-400">
-            <div class="flex gap-5">
-                {links.map(link => (
-                <a href={link.path} title={link.alt} class="hover:text-white transition">{link.label}</a>
-                ))}
-            </div>
-            <p>© {anio} Odonto Nova. Todos los derechos reservados a TurnoFacil.</p>
-        </div>
-
-    </footer>
-
+<footer
+  class="px-20 bg-slate-950 py-6 flex flex-col md:flex-row items-center justify-between text-xs text-slate-400"
+>
+  <div class="flex flex-col gap-4 w-full justify-between items-center max-w-7xl mx-auto">
+    <nav class="flex flex-col md:flex-row gap-5">
+      {
+        links.map((link) => (
+          <a
+            href={link.path}
+            title={link.alt}
+            class="hover:text-white transition"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+    <p>© {anio} Odonto Nova. Todos los derechos reservados a TurnoFacil.</p>
+  </div>
+</footer>
