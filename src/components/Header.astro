@@ -1,6 +1,7 @@
 ---
 import headerLinks from '../data/headerLinks.json';
 import  MenuHamb  from './Icons/MenuHamb.astro';
+import Login  from './Icons/Login.astro';
 ---
 
 <header class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
@@ -52,7 +53,27 @@ import  MenuHamb  from './Icons/MenuHamb.astro';
             ))
             }
         </ul>
+
+        <div class="p-3 mr-3">
+            <a href="/login" title="Iniciar sesión">
+            <Login />
+            </a>
+        </div>
+        
+
         </nav>
+
+        
 
   </div>
 </header>
+
+ <script>
+  import { toggleClass } from '../utils/toggleClass.js';
+
+  const menuToggle = document.getElementById('menu-toggle');
+
+  menuToggle?.addEventListener('click', () => {
+    toggleClass('mobile-menu', 'hidden');
+  });
+</script>

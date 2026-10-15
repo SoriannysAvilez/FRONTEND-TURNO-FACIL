@@ -1,0 +1,32 @@
+---
+const { estado, id } = Astro.props;
+
+const estados = {
+  pendiente: {
+    nombre: 'Pendiente',
+    color: 'bg-amber-100 text-amber-800'
+  },
+  confirmada: {
+    nombre: 'Confirmada',
+    color: 'bg-emerald-100 text-emerald-800'
+  },
+  cancelada: {
+    nombre: 'Cancelada',
+    color: 'bg-red-100 text-red-700'
+  },
+  atendida: {
+    nombre: 'Atendida',
+    color: 'bg-blue-100 text-blue-800'
+  }
+};
+
+const actual = estados[estado] ?? estados.pendiente;
+---
+
+<span
+  data-estado-id={id}
+  data-estado-actual={estado}
+  class={`estado-cita inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ${actual.color}`}
+>
+  {actual.nombre}
+</span>

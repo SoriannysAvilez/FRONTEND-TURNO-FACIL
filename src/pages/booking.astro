@@ -1,0 +1,232 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FormContacto from '../components/FormContacto.astro';
+import CardSummary from '../components/CardSummary.astro';
+import RowBooking from '../components/RowBooking.astro';
+import CardBooking from '../components/CardBooking.astro';
+
+// Simulación temporal del usuario.
+const rolUsuario = 'admin';
+const esAdmin = rolUsuario === 'admin';
+
+// Datos de prueba.
+const citas = [
+  { id: 1, servicio: 'Limpieza dental', fecha: '16/10/2026', hora: '10:30 a. m.', estado: 'confirmada' },
+  { id: 2, servicio: 'Consulta odontológica', fecha: '20/10/2026', hora: '03:00 p. m.', estado: 'pendiente' },
+  { id: 3, servicio: 'Blanqueamiento dental', fecha: '25/09/2026', hora: '11:00 a. m.', estado: 'atendida' },
+  { id: 4, servicio: 'Ortodoncia', fecha: '18/09/2026', hora: '09:00 a. m.', estado: 'cancelada' }
+];
+---
+
+<Layout>
+  <main class="min-h-screen bg-slate-200 px-4 py-8 sm:px-6 lg:px-10">
+    <div class="mx-auto max-w-7xl">
+
+      <!-- Encabezado -->
+      <header class="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <a href="/" class="mb-3 inline-flex text-sm text-blue-700 hover:text-blue-900">
+            ← Salir
+          </a>
+
+          <h1 class="text-4xl font-bold tracking-tight text-blue-950">
+            Mis citas
+          </h1>
+
+          <p class="mt-2 text-slate-700">
+            Consulta tus reservas y el estado de tus próximas visitas.
+          </p>
+        </div>
+
+        <button id="btn-reservar" type="button"
+          class="rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800">
+          + Reservar una cita
+        </button>
+      </header>
+
+      <section class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <CardSummary
+          titulo="Total de reservas"
+          total={citas.length}
+          descripcion="Todas tus citas"
+        />
+
+        <CardSummary
+          titulo="Pendientes"
+          total={citas.filter(c => c.estado === 'pendiente').length}
+          descripcion="Por confirmar"
+          color="text-amber-600"
+        />
+
+        <CardSummary
+          titulo="Confirmadas"
+          total={citas.filter(c => c.estado === 'confirmada').length}
+          descripcion="Próximas visitas"
+          color="text-emerald-600"
+        />
+
+        <CardSummary
+          titulo="Atendidas"
+          total={citas.filter(c => c.estado === 'atendida').length}
+          descripcion="Visitas realizadas"
+          color="text-blue-700"
+        />
+      </section>
+
+      <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-100 px-6 py-5">
+          <h2 class="text-lg font-bold text-blue-950">Historial de reservas</h2>
+          <p class="mt-1 text-sm text-slate-500">Revisa los detalles de cada cita.</p>
+        </div>
+
+        
+        <div class="hidden overflow-x-auto md:block">
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 text-sm text-slate-500">
+              <tr>
+                <th class="px-6 py-4">Servicio</th>
+                <th class="px-6 py-4">Fecha</th>
+                <th class="px-6 py-4">Hora</th>
+                <th class="px-6 py-4">Estado</th>
+                {esAdmin && <th class="px-6 py-4">Acción</th>}
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-100">
+              {citas.map(cita => (
+                <RowBooking cita={cita} esAdmin={esAdmin} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        
+        <div class="space-y-4 p-4 md:hidden">
+          {citas.map(cita => (
+            <CardBooking cita={cita} esAdmin={esAdmin} />
+          ))}
+        </div>
+      </section>
+
+     
+      <section id="formulario-reserva" class="mt-8 hidden">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-xl font-bold text-blue-950">Reservar una cita</h2>
+          <button id="btn-cerrar-formulario" type="button"
+            class="rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-300">
+            Cerrar ✕
+          </button>
+        </div>
+
+        <FormContacto />
+      </section>
+
+      <p id="mensaje-estado" class="mt-4 text-sm font-medium text-emerald-700"
+        role="status" aria-live="polite"></p>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  // Mostrar y cerrar el formulario.
+  const formulario = document.getElementById('formulario-reserva');
+
+  document.getElementById('btn-reservar')?.addEventListener('click', () => {
+    formulario?.classList.remove('hidden');
+    formulario?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  document.getElementById('btn-cerrar-formulario')?.addEventListener('click', () => {
+    formulario?.classList.add('hidden');
+  });
+
+  // Colores de cada estado.
+  const colores = {
+    pendiente: 'bg-amber-100 text-amber-800',
+    confirmada: 'bg-emerald-100 text-emerald-800',
+    cancelada: 'bg-red-100 text-red-700',
+    atendida: 'bg-blue-100 text-blue-800'
+  };
+
+  const nombres = {
+    pendiente: 'Pendiente',
+    confirmada: 'Confirmada',
+    cancelada: 'Cancelada',
+    atendida: 'Atendida'
+  };
+
+  const clasesColor = Object.values(colores).join(' ').split(' ');
+
+  // Sincronizar los estados y los selectores de escritorio y móvil.
+  document.querySelectorAll('[data-actualizar-id]').forEach(boton => {
+    boton.addEventListener('click', () => {
+      const id = boton.getAttribute('data-actualizar-id');
+      const contenedor = boton.closest('tr, article');
+      const selector = contenedor?.querySelector('[data-selector-id]');
+
+      if (!id || !(selector instanceof HTMLSelectElement)) return;
+
+      const estado = selector.value;
+
+      if (!(estado in nombres)) return;
+
+      // Actualizar las dos etiquetas de la misma cita.
+      document.querySelectorAll('[data-estado-id]').forEach(etiqueta => {
+        if (etiqueta.getAttribute('data-estado-id') !== id) return;
+
+        etiqueta.textContent = nombres[estado as keyof typeof nombres];
+        etiqueta.setAttribute('data-estado-actual', estado);
+        etiqueta.classList.remove(...clasesColor);
+        etiqueta.classList.add(...colores[estado as keyof typeof colores].split(' '));
+      });
+
+      // Mantener sincronizados los dos selectores.
+      document.querySelectorAll(`[data-selector-id="${id}"]`).forEach(elemento => {
+        if (elemento instanceof HTMLSelectElement) {
+          elemento.value = estado;
+        }
+      });
+
+      // Recalcular los contadores.
+      const estados = {
+        pendiente: 0,
+        confirmada: 0,
+        atendida: 0
+      };
+
+      document.querySelectorAll('tbody [data-estado-id]').forEach(etiqueta => {
+        const actual = etiqueta.getAttribute('data-estado-actual');
+
+        if (actual && actual in estados) {
+          estados[actual as keyof typeof estados]++;
+        }
+      });
+
+      const actualizarNumero = (id: string, valor: number) => {
+        const elemento = document.getElementById(id);
+        if (elemento) elemento.textContent = String(valor);
+      };
+
+      actualizarNumero('total-pendientes', estados.pendiente);
+      actualizarNumero('total-confirmadas', estados.confirmada);
+      actualizarNumero('total-atendidas', estados.atendida);
+
+      // Mostrar confirmación.
+      const mensaje = document.getElementById('mensaje-estado');
+
+      if (mensaje) {
+        mensaje.textContent = `La reserva #${id} ahora está: ${nombres[estado as keyof typeof nombres]}.`;
+      }
+    });
+  });
+
+  // Preparar las etiquetas para el primer recálculo.
+  document.querySelectorAll('[data-estado-id]').forEach(etiqueta => {
+    const id = etiqueta.getAttribute('data-estado-id');
+    const selector = document.querySelector(`[data-selector-id="${id}"]`);
+
+    if (selector instanceof HTMLSelectElement) {
+      etiqueta.setAttribute('data-estado-actual', selector.value);
+    }
+  });
+</script>
