@@ -1,0 +1,66 @@
+---
+import Diente from './Icons/Diente.astro';
+import EdoBooking from './EdoBooking.astro';
+
+const { cita, esAdmin } = Astro.props;
+
+const estados = ['pendiente', 'confirmada', 'cancelada', 'atendida'];
+const nombres = ['Pendiente', 'Confirmada', 'Cancelada', 'Atendida'];
+---
+
+<article class="rounded-xl border border-slate-200 p-4">
+  <div class="flex items-start justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-xl">
+        <Diente />
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-slate-800">{cita.servicio}</h3>
+        <p class="mt-1 text-xs text-slate-400">Reserva #{cita.id}</p>
+      </div>
+    </div>
+
+    <EdoBooking estado={cita.estado} id={cita.id} />
+  </div>
+
+  <div class="mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 text-sm">
+    <div>
+      <p class="text-slate-400">Fecha</p>
+      <p class="mt-1 font-medium text-slate-700">{cita.fecha}</p>
+    </div>
+
+    <div>
+      <p class="text-slate-400">Hora</p>
+      <p class="mt-1 font-medium text-slate-700">{cita.hora}</p>
+    </div>
+  </div>
+
+  {esAdmin && (
+    <div class="mt-4 border-t border-slate-100 pt-4">
+      <label for={`estado-movil-${cita.id}`} class="mb-2 block text-sm font-medium text-slate-700">
+        Cambiar estado
+      </label>
+
+      <select
+        id={`estado-movil-${cita.id}`}
+        data-selector-id={cita.id}
+        class="mb-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+      >
+        {estados.map((estado, i) => (
+          <option value={estado} selected={cita.estado === estado}>
+            {nombres[i]}
+          </option>
+        ))}
+      </select>
+
+      <button
+        type="button"
+        data-actualizar-id={cita.id}
+        class="w-full rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+      >
+        Actualizar estado
+      </button>
+    </div>
+  )}
+</article>
