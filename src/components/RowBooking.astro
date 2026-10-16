@@ -1,0 +1,58 @@
+---
+import Diente from './Icons/Diente.astro';
+import EdoBooking from './EdoBooking.astro';
+
+const { cita, esAdmin } = Astro.props;
+
+const estados = ['pendiente', 'confirmada', 'cancelada', 'atendida'];
+const nombres = ['Pendiente', 'Confirmada', 'Cancelada', 'Atendida'];
+---
+
+<tr class="transition hover:bg-blue-50/40">
+  <td class="px-6 py-5">
+    <div class="flex items-center gap-3">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-xl">
+        <Diente />
+      </div>
+      <div>
+        <p class="font-semibold text-slate-800">{cita.servicio}</p>
+        <p class="mt-1 text-xs text-slate-400">Reserva #{cita.id}</p>
+      </div>
+    </div>
+  </td>
+
+  <td class="px-6 py-5 text-sm text-slate-600">{cita.fecha}</td>
+  <td class="px-6 py-5 text-sm text-slate-600">{cita.hora}</td>
+
+  <td class="px-6 py-5">
+    <EdoBooking estado={cita.estado} id={cita.id} />
+  </td>
+
+  {esAdmin && (
+    <td class="px-6 py-5">
+      <label for={`estado-desktop-${cita.id}`} class="sr-only">
+        Cambiar estado de la reserva {cita.id}
+      </label>
+
+      <select
+        id={`estado-desktop-${cita.id}`}
+        data-selector-id={cita.id}
+        class="mb-2 w-full rounded-lg border border-slate-300 bg-white px-2 py-2 text-sm"
+      >
+        {estados.map((estado, i) => (
+          <option value={estado} selected={cita.estado === estado}>
+            {nombres[i]}
+          </option>
+        ))}
+      </select>
+
+      <button
+        type="button"
+        data-actualizar-id={cita.id}
+        class="w-full rounded-lg bg-blue-700 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+      >
+        Actualizar
+      </button>
+    </td>
+  )}
+</tr>
