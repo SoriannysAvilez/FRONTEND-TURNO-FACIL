@@ -1,8 +1,8 @@
 ---
 import Card from "../Card.astro";
-import { servicios } from "../../api/consulta";
+import { getServicios } from "../../api/consulta";
 
-const listServicios = servicios.datos;
+const listServicios = await getServicios();
 ---
 
 <section id="especialidades" class="bg-gray-100 px-6 py-12">
@@ -19,12 +19,11 @@ const listServicios = servicios.datos;
         <div class="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
 
             {
-                listServicios.map((doctor) => (
+                listServicios.map((servicio) => (
                     <Card
-                        imagen="{doctor.imagen}"
-                        titulo="doctor.titulo}"
-                        nombre={doctor.nombre}
-                        descripcion={doctor.descripcion}
+                        titulo={servicio.nombre}
+                        nombre={`$${servicio.precio}`}
+                        descripcion={servicio.descripcion}
                     >
                         
                     </Card>

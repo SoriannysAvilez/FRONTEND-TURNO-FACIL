@@ -5,17 +5,18 @@ import CardSummary from '../components/CardSummary.astro';
 import RowBooking from '../components/RowBooking.astro';
 import CardBooking from '../components/CardBooking.astro';
 
-// Simulación temporal del usuario.
-const rolUsuario = 'admin';
-const esAdmin = rolUsuario === 'admin';
-
-// Datos de prueba.
-const citas = [
-  { id: 1, servicio: 'Limpieza dental', fecha: '16/10/2026', hora: '10:30 a. m.', estado: 'confirmada' },
-  { id: 2, servicio: 'Consulta odontológica', fecha: '20/10/2026', hora: '03:00 p. m.', estado: 'pendiente' },
-  { id: 3, servicio: 'Blanqueamiento dental', fecha: '25/09/2026', hora: '11:00 a. m.', estado: 'atendida' },
-  { id: 4, servicio: 'Ortodoncia', fecha: '18/09/2026', hora: '09:00 a. m.', estado: 'cancelada' }
-];
+// Plantilla de vista: el <script> de abajo la rellena con las reservas reales.
+// La lista requiere token, así que no se puede generar en tiempo de build.
+const citaPlantilla = {
+  id: '@@id@@',
+  servicio: '@@servicio@@',
+  fecha: '@@fecha@@',
+  hora: '@@hora@@',
+  nombre_contacto: '@@nombre_contacto@@',
+  email_contacto: '@@email_contacto@@',
+  telefono: '@@telefono@@',
+  estado: 'pendiente'
+};
 ---
 
 <Layout>
@@ -44,32 +45,44 @@ const citas = [
         </button>
       </header>
 
-      <section class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <CardSummary
+          id="total-reservas"
           titulo="Total de reservas"
-          total={citas.length}
+          total={0}
           descripcion="Todas tus citas"
         />
 
         <CardSummary
+          id="total-pendientes"
           titulo="Pendientes"
-          total={citas.filter(c => c.estado === 'pendiente').length}
+          total={0}
           descripcion="Por confirmar"
           color="text-amber-600"
         />
 
         <CardSummary
+          id="total-confirmadas"
           titulo="Confirmadas"
-          total={citas.filter(c => c.estado === 'confirmada').length}
+          total={0}
           descripcion="Próximas visitas"
           color="text-emerald-600"
         />
 
         <CardSummary
+          id="total-atendidas"
           titulo="Atendidas"
-          total={citas.filter(c => c.estado === 'atendida').length}
+          total={0}
           descripcion="Visitas realizadas"
           color="text-blue-700"
+        />
+
+        <CardSummary
+          id="total-canceladas"
+          titulo="Canceladas"
+          total={0}
+          descripcion="Citas anuladas"
+          color="text-red-600"
         />
       </section>
 
@@ -79,36 +92,29 @@ const citas = [
           <p class="mt-1 text-sm text-slate-500">Revisa los detalles de cada cita.</p>
         </div>
 
-        
+
         <div class="hidden overflow-x-auto md:block">
           <table class="w-full text-left">
             <thead class="bg-slate-50 text-sm text-slate-500">
               <tr>
                 <th class="px-6 py-4">Servicio</th>
+                <th class="px-6 py-4">Paciente</th>
                 <th class="px-6 py-4">Fecha</th>
                 <th class="px-6 py-4">Hora</th>
                 <th class="px-6 py-4">Estado</th>
-                {esAdmin && <th class="px-6 py-4">Acción</th>}
+                <th class="hidden px-6 py-4" data-accion>Acción</th>
               </tr>
             </thead>
 
-            <tbody class="divide-y divide-slate-100">
-              {citas.map(cita => (
-                <RowBooking cita={cita} esAdmin={esAdmin} />
-              ))}
-            </tbody>
+            <tbody id="cuerpo-reservas" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
 
-        
-        <div class="space-y-4 p-4 md:hidden">
-          {citas.map(cita => (
-            <CardBooking cita={cita} esAdmin={esAdmin} />
-          ))}
-        </div>
+
+        <div id="tarjetas-reservas" class="space-y-4 p-4 md:hidden"></div>
       </section>
 
-     
+
       <section id="formulario-reserva" class="mt-8 hidden">
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-xl font-bold text-blue-950">Reservar una cita</h2>
@@ -126,25 +132,18 @@ const citas = [
     </div>
   </main>
 </Layout>
+
+<!-- Plantillas que el script copia por cada reserva. -->
+<template id="plantilla-fila">
+  <RowBooking cita={citaPlantilla} esAdmin={true} />
+</template>
+
+<template id="plantilla-tarjeta">
+  <CardBooking cita={citaPlantilla} esAdmin={true} />
+</template>
+
 <script>
-import { servicios } from "../api/consulta";
-
-
-
-</script>
-
-<script>
-  // Mostrar y cerrar el formulario.
-  const formulario = document.getElementById('formulario-reserva');
-
-  document.getElementById('btn-reservar')?.addEventListener('click', () => {
-    formulario?.classList.remove('hidden');
-    formulario?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-
-  document.getElementById('btn-cerrar-formulario')?.addEventListener('click', () => {
-    formulario?.classList.add('hidden');
-  });
+  import { getToken, getUsuario, getReservas, getServicios, actualizarReserva } from '../api/consulta';
 
   // Colores de cada estado.
   const colores = {
@@ -163,76 +162,224 @@ import { servicios } from "../api/consulta";
 
   const clasesColor = Object.values(colores).join(' ').split(' ');
 
-  // Sincronizar los estados y los selectores de escritorio y móvil.
-  document.querySelectorAll('[data-actualizar-id]').forEach(boton => {
-    boton.addEventListener('click', () => {
-      const id = boton.getAttribute('data-actualizar-id');
-      const contenedor = boton.closest('tr, article');
-      const selector = contenedor?.querySelector('[data-selector-id]');
+  // Fecha y hora para mostrar, nunca para volver a parsear.
+  const formatoFecha = new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const formatoHora = new Intl.DateTimeFormat('es-AR', { hour: '2-digit', minute: '2-digit' });
 
-      if (!id || !(selector instanceof HTMLSelectElement)) return;
+  // El HTML de cada plantilla (DocumentFragment no expone innerHTML).
+  const plantillaFila = document.getElementById('plantilla-fila').innerHTML;
+  const plantillaTarjeta = document.getElementById('plantilla-tarjeta').innerHTML;
 
-      const estado = selector.value;
+  // Reservas ya adaptadas a la vista:
+  // { id, servicio, fecha, hora, nombre_contacto, email_contacto, telefono, estado }.
+  let citas = [];
+  let esAdmin = false;
 
-      if (!(estado in nombres)) return;
+  function escapar(texto) {
+    return String(texto)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;');
+  }
 
-      // Actualizar las dos etiquetas de la misma cita.
-      document.querySelectorAll('[data-estado-id]').forEach(etiqueta => {
-        if (etiqueta.getAttribute('data-estado-id') !== id) return;
+  function rellenar(plantilla, cita) {
+    return plantilla
+      .replaceAll('@@id@@', String(cita.id))
+      .replaceAll('@@servicio@@', escapar(cita.servicio))
+      .replaceAll('@@fecha@@', escapar(cita.fecha))
+      .replaceAll('@@hora@@', escapar(cita.hora))
+      .replaceAll('@@nombre_contacto@@', escapar(cita.nombre_contacto ?? ''))
+      .replaceAll('@@email_contacto@@', escapar(cita.email_contacto ?? ''))
+      .replaceAll('@@telefono@@', escapar(cita.telefono ?? ''));
+  }
 
-        etiqueta.textContent = nombres[estado as keyof typeof nombres];
-        etiqueta.setAttribute('data-estado-actual', estado);
-        etiqueta.classList.remove(...clasesColor);
-        etiqueta.classList.add(...colores[estado as keyof typeof colores].split(' '));
-      });
+  function mostrarMensaje(texto, esError = false) {
+    const mensaje = document.getElementById('mensaje-estado');
+    if (!mensaje) return;
 
-      // Mantener sincronizados los dos selectores.
-      document.querySelectorAll(`[data-selector-id="${id}"]`).forEach(elemento => {
-        if (elemento instanceof HTMLSelectElement) {
-          elemento.value = estado;
-        }
-      });
+    mensaje.textContent = texto;
+    mensaje.classList.toggle('text-emerald-700', !esError);
+    mensaje.classList.toggle('text-red-600', esError);
+  }
 
-      // Recalcular los contadores.
-      const estados = {
-        pendiente: 0,
-        confirmada: 0,
-        atendida: 0
-      };
+  function cerrarSesion() {
+    localStorage.removeItem('tf_token');
+    localStorage.removeItem('tf_usuario');
+    window.location.href = '/login';
+  }
 
-      document.querySelectorAll('tbody [data-estado-id]').forEach(etiqueta => {
-        const actual = etiqueta.getAttribute('data-estado-actual');
+  function manejarError(error) {
+    if (error.status === 401) {
+      cerrarSesion();
+      return;
+    }
 
-        if (actual && actual in estados) {
-          estados[actual as keyof typeof estados]++;
-        }
-      });
+    mostrarMensaje(error.status ? error.message : 'No se pudo conectar con el servidor', true);
+  }
 
-      const actualizarNumero = (id: string, valor: number) => {
-        const elemento = document.getElementById(id);
-        if (elemento) elemento.textContent = String(valor);
-      };
+  // Actualiza las dos etiquetas (tabla y tarjeta) y los dos selectores.
+  function sincronizarEstado(id, estado) {
+    const color = colores[estado] ?? colores.pendiente;
+    const nombre = nombres[estado] ?? estado;
 
-      actualizarNumero('total-pendientes', estados.pendiente);
-      actualizarNumero('total-confirmadas', estados.confirmada);
-      actualizarNumero('total-atendidas', estados.atendida);
+    document.querySelectorAll('[data-estado-id]').forEach(etiqueta => {
+      if (etiqueta.getAttribute('data-estado-id') !== String(id)) return;
 
-      // Mostrar confirmación.
-      const mensaje = document.getElementById('mensaje-estado');
+      etiqueta.textContent = nombre;
+      etiqueta.setAttribute('data-estado-actual', estado);
+      etiqueta.classList.remove(...clasesColor);
+      etiqueta.classList.add(...color.split(' '));
+    });
 
-      if (mensaje) {
-        mensaje.textContent = `La reserva #${id} ahora está: ${nombres[estado as keyof typeof nombres]}.`;
+    document.querySelectorAll(`[data-selector-id="${id}"]`).forEach(elemento => {
+      if (elemento instanceof HTMLSelectElement) {
+        elemento.value = estado;
       }
     });
+  }
+
+  function actualizarContadores() {
+    const estados = { pendiente: 0, confirmada: 0, cancelada: 0, atendida: 0 };
+
+    // Solo la tabla: cada reserva también aparece en las tarjetas móviles.
+    document.querySelectorAll('tbody [data-estado-id]').forEach(etiqueta => {
+      const actual = etiqueta.getAttribute('data-estado-actual');
+
+      if (actual && actual in estados) {
+        estados[actual] += 1;
+      }
+    });
+
+    const poner = (id, valor) => {
+      const elemento = document.getElementById(id);
+      if (elemento) elemento.textContent = String(valor);
+    };
+
+    poner('total-reservas', citas.length);
+    poner('total-pendientes', estados.pendiente);
+    poner('total-confirmadas', estados.confirmada);
+    poner('total-atendidas', estados.atendida);
+    poner('total-canceladas', estados.cancelada);
+  }
+
+  function pintarReservas() {
+    const cuerpo = document.getElementById('cuerpo-reservas');
+    const tarjetas = document.getElementById('tarjetas-reservas');
+    if (!cuerpo || !tarjetas) return;
+
+    cuerpo.innerHTML = citas.map(cita => rellenar(plantillaFila, cita)).join('');
+    tarjetas.innerHTML = citas.map(cita => rellenar(plantillaTarjeta, cita)).join('');
+
+    // La columna de acción solo se muestra para administradores.
+    document.querySelectorAll('[data-accion]').forEach(elemento => {
+      if (esAdmin) elemento.classList.remove('hidden');
+      else elemento.remove();
+    });
+
+    citas.forEach(cita => sincronizarEstado(cita.id, cita.estado));
+
+    document.querySelectorAll('[data-actualizar-id]').forEach(boton => {
+      boton.addEventListener('click', alActualizarEstado);
+    });
+
+    actualizarContadores();
+  }
+
+  async function alActualizarEstado(evento) {
+    const boton = evento.currentTarget;
+    const id = boton.getAttribute('data-actualizar-id');
+    const contenedor = boton.closest('tr, article');
+    const selector = contenedor?.querySelector('[data-selector-id]');
+
+    if (!id || !(selector instanceof HTMLSelectElement)) return;
+
+    const estado = selector.value;
+    if (!(estado in nombres)) return;
+
+    const cita = citas.find(item => String(item.id) === id);
+
+    try {
+      // Se relee el token en el momento: si la sesión cambió o expiró, el
+      // backend responde 401 y cerramos sesión.
+      await actualizarReserva(getToken(), id, { estado });
+    } catch (error) {
+      if (error.status === 401) {
+        cerrarSesion();
+        return;
+      }
+
+      // 409: el backend explica que solo se puede cambiar en ciertos estados.
+      if (cita) sincronizarEstado(cita.id, cita.estado);
+      manejarError(error);
+      return;
+    }
+
+    if (cita) cita.estado = estado;
+
+    pintarReservas();
+    mostrarMensaje(`La reserva #${id} ahora está: ${nombres[estado]}.`);
+  }
+
+  async function cargarReservas() {
+    try {
+      const usuario = await getUsuario(token);
+
+      // El panel de reservas es exclusivo del administrador. El cliente
+      // reserva desde el formulario del home (/), nunca entra acá.
+      if (usuario.rol !== 'admin') {
+        window.location.href = '/';
+        return;
+      }
+
+      esAdmin = true;
+
+      const [reservas, servicios] = await Promise.all([
+        getReservas(token),
+        getServicios()
+      ]);
+
+      const serviciosPorId = new Map(servicios.map(servicio => [servicio.id, servicio.nombre]));
+
+      citas = reservas.map(reserva => {
+        const momento = new Date(reserva.fecha_hora);
+        const valido = !Number.isNaN(momento.getTime());
+
+        return {
+          id: reserva.id,
+          servicio: serviciosPorId.get(reserva.servicio_id) ?? `Servicio ${reserva.servicio_id}`,
+          fecha: valido ? formatoFecha.format(momento) : reserva.fecha_hora,
+          hora: valido ? formatoHora.format(momento) : '',
+          nombre_contacto: reserva.nombre_contacto,
+          email_contacto: reserva.email_contacto,
+          telefono: reserva.telefono ?? '',
+          estado: reserva.estado
+        };
+      });
+
+      pintarReservas();
+    } catch (error) {
+      manejarError(error);
+    }
+  }
+
+  const token = getToken();
+
+  if (!token) {
+    window.location.href = '/login';
+  } else {
+    cargarReservas();
+  }
+
+  // Mostrar y cerrar el formulario.
+  const formulario = document.getElementById('formulario-reserva');
+
+  document.getElementById('btn-reservar')?.addEventListener('click', () => {
+    formulario?.classList.remove('hidden');
+    formulario?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  // Preparar las etiquetas para el primer recálculo.
-  document.querySelectorAll('[data-estado-id]').forEach(etiqueta => {
-    const id = etiqueta.getAttribute('data-estado-id');
-    const selector = document.querySelector(`[data-selector-id="${id}"]`);
-
-    if (selector instanceof HTMLSelectElement) {
-      etiqueta.setAttribute('data-estado-actual', selector.value);
-    }
+  document.getElementById('btn-cerrar-formulario')?.addEventListener('click', () => {
+    formulario?.classList.add('hidden');
   });
 </script>

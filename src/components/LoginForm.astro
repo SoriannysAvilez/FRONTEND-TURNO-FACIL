@@ -4,14 +4,13 @@
 // (se ejecuta en el navegador, Astro no la procesa en el servidor).
 
 interface Props {
-  apiUrl?: string; // URL base del backend
   registroHref?: string; // ruta de la página de registro
 }
 
-const { apiUrl = "http://localhost:3000", registroHref = "/registro" } = Astro.props;
+const { registroHref = "/registro" } = Astro.props;
 ---
 
-<form id="formLogin" class="max-w-sm mx-auto flex flex-col gap-4 p-6 border rounded-lg" data-api-url={apiUrl}>
+<form id="formLogin" class="max-w-sm mx-auto flex flex-col gap-4 p-6 border rounded-lg">
   <h2 class="text-lg font-semibold text-slate-800">Iniciar sesión</h2>
 
   <div class="flex flex-col gap-1">
@@ -59,10 +58,11 @@ const { apiUrl = "http://localhost:3000", registroHref = "/registro" } = Astro.p
 
 <script>
   // Se ejecuta en el navegador. Envía las credenciales a POST /auth/login.
+  import { login, getUsuario } from "../api/consulta";
+
   const form = document.getElementById("formLogin") as HTMLFormElement;
   const errorEl = document.getElementById("errorLogin") as HTMLParagraphElement;
   const botonSubmit = form.querySelector("button[type='submit']") as HTMLButtonElement;
-  const apiUrl = form.dataset.apiUrl;
 
   function mostrarError(mensaje: string) {
     errorEl.textContent = mensaje;
@@ -84,26 +84,18 @@ const { apiUrl = "http://localhost:3000", registroHref = "/registro" } = Astro.p
     botonSubmit.textContent = "Ingresando...";
 
     try {
-      const respuesta = await fetch(`${apiUrl}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      // El login solo devuelve el token: el usuario se pide después.
+      const { token } = await login(email, password);
+      localStorage.setItem("tf_token", token);
 
-      const datos = await respuesta.json();
+      const usuario = await getUsuario(token);
+      localStorage.setItem("tf_usuario", JSON.stringify(usuario));
 
-      if (!respuesta.ok) {
-        mostrarError(datos.error?.mensaje ?? "No se pudo iniciar sesión");
-        return;
-      }
-
-      // Guarda el token para usarlo en peticiones autenticadas (ej: /reservas, /auth/yo)
-      localStorage.setItem("tf_token", datos.token);
-      localStorage.setItem("tf_usuario", JSON.stringify(datos.usuario));
-
-      window.location.href = "/"; // redirige a donde corresponda tras el login
+      // El panel /booking es solo para administradores; el cliente reserva
+      // desde el formulario del home.
+      window.location.href = usuario.rol === "admin" ? "/booking" : "/";
     } catch (error) {
-      mostrarError("No se pudo conectar con el servidor");
+      mostrarError(error.status ? error.message : "No se pudo conectar con el servidor");
     } finally {
       botonSubmit.disabled = false;
       botonSubmit.textContent = "Ingresar";
