@@ -1,0 +1,385 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FormContacto from '../components/FormContacto.astro';
+import CardSummary from '../components/CardSummary.astro';
+import RowBooking from '../components/RowBooking.astro';
+import CardBooking from '../components/CardBooking.astro';
+
+// Plantilla de vista: el <script> de abajo la rellena con las reservas reales.
+// La lista requiere token, así que no se puede generar en tiempo de build.
+const citaPlantilla = {
+  id: '@@id@@',
+  servicio: '@@servicio@@',
+  fecha: '@@fecha@@',
+  hora: '@@hora@@',
+  nombre_contacto: '@@nombre_contacto@@',
+  email_contacto: '@@email_contacto@@',
+  telefono: '@@telefono@@',
+  estado: 'pendiente'
+};
+---
+
+<Layout>
+  <main class="min-h-screen bg-slate-200 px-4 py-8 sm:px-6 lg:px-10">
+    <div class="mx-auto max-w-7xl">
+
+      <!-- Encabezado -->
+      <header class="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <a href="/" class="mb-3 inline-flex text-sm text-blue-700 hover:text-blue-900">
+            ← Salir
+          </a>
+
+          <h1 class="text-4xl font-bold tracking-tight text-blue-950">
+            Mis citas
+          </h1>
+
+          <p class="mt-2 text-slate-700">
+            Consulta tus reservas y el estado de tus próximas visitas.
+          </p>
+        </div>
+
+        <button id="btn-reservar" type="button"
+          class="rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800">
+          + Reservar una cita
+        </button>
+      </header>
+
+      <section class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <CardSummary
+          id="total-reservas"
+          titulo="Total de reservas"
+          total={0}
+          descripcion="Todas tus citas"
+        />
+
+        <CardSummary
+          id="total-pendientes"
+          titulo="Pendientes"
+          total={0}
+          descripcion="Por confirmar"
+          color="text-amber-600"
+        />
+
+        <CardSummary
+          id="total-confirmadas"
+          titulo="Confirmadas"
+          total={0}
+          descripcion="Próximas visitas"
+          color="text-emerald-600"
+        />
+
+        <CardSummary
+          id="total-atendidas"
+          titulo="Atendidas"
+          total={0}
+          descripcion="Visitas realizadas"
+          color="text-blue-700"
+        />
+
+        <CardSummary
+          id="total-canceladas"
+          titulo="Canceladas"
+          total={0}
+          descripcion="Citas anuladas"
+          color="text-red-600"
+        />
+      </section>
+
+      <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-100 px-6 py-5">
+          <h2 class="text-lg font-bold text-blue-950">Historial de reservas</h2>
+          <p class="mt-1 text-sm text-slate-500">Revisa los detalles de cada cita.</p>
+        </div>
+
+
+        <div class="hidden overflow-x-auto md:block">
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 text-sm text-slate-500">
+              <tr>
+                <th class="px-6 py-4">Servicio</th>
+                <th class="px-6 py-4">Paciente</th>
+                <th class="px-6 py-4">Fecha</th>
+                <th class="px-6 py-4">Hora</th>
+                <th class="px-6 py-4">Estado</th>
+                <th class="hidden px-6 py-4" data-accion>Acción</th>
+              </tr>
+            </thead>
+
+            <tbody id="cuerpo-reservas" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+
+
+        <div id="tarjetas-reservas" class="space-y-4 p-4 md:hidden"></div>
+      </section>
+
+
+      <section id="formulario-reserva" class="mt-8 hidden">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-xl font-bold text-blue-950">Reservar una cita</h2>
+          <button id="btn-cerrar-formulario" type="button"
+            class="rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-300">
+            Cerrar ✕
+          </button>
+        </div>
+
+        <FormContacto />
+      </section>
+
+      <p id="mensaje-estado" class="mt-4 text-sm font-medium text-emerald-700"
+        role="status" aria-live="polite"></p>
+    </div>
+  </main>
+</Layout>
+
+<!-- Plantillas que el script copia por cada reserva. -->
+<template id="plantilla-fila">
+  <RowBooking cita={citaPlantilla} esAdmin={true} />
+</template>
+
+<template id="plantilla-tarjeta">
+  <CardBooking cita={citaPlantilla} esAdmin={true} />
+</template>
+
+<script>
+  import { getToken, getUsuario, getReservas, getServicios, actualizarReserva } from '../api/consulta';
+
+  // Colores de cada estado.
+  const colores = {
+    pendiente: 'bg-amber-100 text-amber-800',
+    confirmada: 'bg-emerald-100 text-emerald-800',
+    cancelada: 'bg-red-100 text-red-700',
+    atendida: 'bg-blue-100 text-blue-800'
+  };
+
+  const nombres = {
+    pendiente: 'Pendiente',
+    confirmada: 'Confirmada',
+    cancelada: 'Cancelada',
+    atendida: 'Atendida'
+  };
+
+  const clasesColor = Object.values(colores).join(' ').split(' ');
+
+  // Fecha y hora para mostrar, nunca para volver a parsear.
+  const formatoFecha = new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const formatoHora = new Intl.DateTimeFormat('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+  // El HTML de cada plantilla (DocumentFragment no expone innerHTML).
+  const plantillaFila = document.getElementById('plantilla-fila').innerHTML;
+  const plantillaTarjeta = document.getElementById('plantilla-tarjeta').innerHTML;
+
+  // Reservas ya adaptadas a la vista:
+  // { id, servicio, fecha, hora, nombre_contacto, email_contacto, telefono, estado }.
+  let citas = [];
+  let esAdmin = false;
+
+  function escapar(texto) {
+    return String(texto)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;');
+  }
+
+  function rellenar(plantilla, cita) {
+    return plantilla
+      .replaceAll('@@id@@', String(cita.id))
+      .replaceAll('@@servicio@@', escapar(cita.servicio))
+      .replaceAll('@@fecha@@', escapar(cita.fecha))
+      .replaceAll('@@hora@@', escapar(cita.hora))
+      .replaceAll('@@nombre_contacto@@', escapar(cita.nombre_contacto ?? ''))
+      .replaceAll('@@email_contacto@@', escapar(cita.email_contacto ?? ''))
+      .replaceAll('@@telefono@@', escapar(cita.telefono ?? ''));
+  }
+
+  function mostrarMensaje(texto, esError = false) {
+    const mensaje = document.getElementById('mensaje-estado');
+    if (!mensaje) return;
+
+    mensaje.textContent = texto;
+    mensaje.classList.toggle('text-emerald-700', !esError);
+    mensaje.classList.toggle('text-red-600', esError);
+  }
+
+  function cerrarSesion() {
+    localStorage.removeItem('tf_token');
+    localStorage.removeItem('tf_usuario');
+    window.location.href = '/login';
+  }
+
+  function manejarError(error) {
+    if (error.status === 401) {
+      cerrarSesion();
+      return;
+    }
+
+    mostrarMensaje(error.status ? error.message : 'No se pudo conectar con el servidor', true);
+  }
+
+  // Actualiza las dos etiquetas (tabla y tarjeta) y los dos selectores.
+  function sincronizarEstado(id, estado) {
+    const color = colores[estado] ?? colores.pendiente;
+    const nombre = nombres[estado] ?? estado;
+
+    document.querySelectorAll('[data-estado-id]').forEach(etiqueta => {
+      if (etiqueta.getAttribute('data-estado-id') !== String(id)) return;
+
+      etiqueta.textContent = nombre;
+      etiqueta.setAttribute('data-estado-actual', estado);
+      etiqueta.classList.remove(...clasesColor);
+      etiqueta.classList.add(...color.split(' '));
+    });
+
+    document.querySelectorAll(`[data-selector-id="${id}"]`).forEach(elemento => {
+      if (elemento instanceof HTMLSelectElement) {
+        elemento.value = estado;
+      }
+    });
+  }
+
+  function actualizarContadores() {
+    const estados = { pendiente: 0, confirmada: 0, cancelada: 0, atendida: 0 };
+
+    // Solo la tabla: cada reserva también aparece en las tarjetas móviles.
+    document.querySelectorAll('tbody [data-estado-id]').forEach(etiqueta => {
+      const actual = etiqueta.getAttribute('data-estado-actual');
+
+      if (actual && actual in estados) {
+        estados[actual] += 1;
+      }
+    });
+
+    const poner = (id, valor) => {
+      const elemento = document.getElementById(id);
+      if (elemento) elemento.textContent = String(valor);
+    };
+
+    poner('total-reservas', citas.length);
+    poner('total-pendientes', estados.pendiente);
+    poner('total-confirmadas', estados.confirmada);
+    poner('total-atendidas', estados.atendida);
+    poner('total-canceladas', estados.cancelada);
+  }
+
+  function pintarReservas() {
+    const cuerpo = document.getElementById('cuerpo-reservas');
+    const tarjetas = document.getElementById('tarjetas-reservas');
+    if (!cuerpo || !tarjetas) return;
+
+    cuerpo.innerHTML = citas.map(cita => rellenar(plantillaFila, cita)).join('');
+    tarjetas.innerHTML = citas.map(cita => rellenar(plantillaTarjeta, cita)).join('');
+
+    // La columna de acción solo se muestra para administradores.
+    document.querySelectorAll('[data-accion]').forEach(elemento => {
+      if (esAdmin) elemento.classList.remove('hidden');
+      else elemento.remove();
+    });
+
+    citas.forEach(cita => sincronizarEstado(cita.id, cita.estado));
+
+    document.querySelectorAll('[data-actualizar-id]').forEach(boton => {
+      boton.addEventListener('click', alActualizarEstado);
+    });
+
+    actualizarContadores();
+  }
+
+  async function alActualizarEstado(evento) {
+    const boton = evento.currentTarget;
+    const id = boton.getAttribute('data-actualizar-id');
+    const contenedor = boton.closest('tr, article');
+    const selector = contenedor?.querySelector('[data-selector-id]');
+
+    if (!id || !(selector instanceof HTMLSelectElement)) return;
+
+    const estado = selector.value;
+    if (!(estado in nombres)) return;
+
+    const cita = citas.find(item => String(item.id) === id);
+
+    try {
+      // Se relee el token en el momento: si la sesión cambió o expiró, el
+      // backend responde 401 y cerramos sesión.
+      await actualizarReserva(getToken(), id, { estado });
+    } catch (error) {
+      if (error.status === 401) {
+        cerrarSesion();
+        return;
+      }
+
+      // 409: el backend explica que solo se puede cambiar en ciertos estados.
+      if (cita) sincronizarEstado(cita.id, cita.estado);
+      manejarError(error);
+      return;
+    }
+
+    if (cita) cita.estado = estado;
+
+    pintarReservas();
+    mostrarMensaje(`La reserva #${id} ahora está: ${nombres[estado]}.`);
+  }
+
+  async function cargarReservas() {
+    try {
+      const usuario = await getUsuario(token);
+
+      // El panel de reservas es exclusivo del administrador. El cliente
+      // reserva desde el formulario del home (/), nunca entra acá.
+      if (usuario.rol !== 'admin') {
+        window.location.href = '/';
+        return;
+      }
+
+      esAdmin = true;
+
+      const [reservas, servicios] = await Promise.all([
+        getReservas(token),
+        getServicios()
+      ]);
+
+      const serviciosPorId = new Map(servicios.map(servicio => [servicio.id, servicio.nombre]));
+
+      citas = reservas.map(reserva => {
+        const momento = new Date(reserva.fecha_hora);
+        const valido = !Number.isNaN(momento.getTime());
+
+        return {
+          id: reserva.id,
+          servicio: serviciosPorId.get(reserva.servicio_id) ?? `Servicio ${reserva.servicio_id}`,
+          fecha: valido ? formatoFecha.format(momento) : reserva.fecha_hora,
+          hora: valido ? formatoHora.format(momento) : '',
+          nombre_contacto: reserva.nombre_contacto,
+          email_contacto: reserva.email_contacto,
+          telefono: reserva.telefono ?? '',
+          estado: reserva.estado
+        };
+      });
+
+      pintarReservas();
+    } catch (error) {
+      manejarError(error);
+    }
+  }
+
+  const token = getToken();
+
+  if (!token) {
+    window.location.href = '/login';
+  } else {
+    cargarReservas();
+  }
+
+  // Mostrar y cerrar el formulario.
+  const formulario = document.getElementById('formulario-reserva');
+
+  document.getElementById('btn-reservar')?.addEventListener('click', () => {
+    formulario?.classList.remove('hidden');
+    formulario?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  document.getElementById('btn-cerrar-formulario')?.addEventListener('click', () => {
+    formulario?.classList.add('hidden');
+  });
+</script>

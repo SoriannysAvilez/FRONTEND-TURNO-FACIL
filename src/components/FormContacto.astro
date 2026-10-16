@@ -1,103 +1,97 @@
+---
+import { getServicios } from "../api/consulta";
 
-<form class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-blue-100 p-6 md:p-8">
+const listServicios = await getServicios();
+---
 
-
+<form
+  id="form-reserva"
+  class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-blue-100 p-6 md:p-8"
+>
   <div class="mb-7 text-center">
-    <h2 class="text-blue-900 md:text-3xl font-bold ">
-      Reserva tu cita
-    </h2>
+    <h2 class="text-blue-900 md:text-3xl font-bold">Reserva tu cita</h2>
     <p class="mt-2 text-sm text-slate-500">
-      Completa tus datos y nos pondremos en contacto contigo
+      Elige el servicio, la fecha y la hora de tu visita
     </p>
   </div>
 
-
-
-
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-
-
-
     <div>
-      <label for="nombre" class="block mb-2 text-blue-950 text-sm font-semibold ">
-        Nombre
+      <label
+        for="nombre_contacto"
+        class="block mb-2 text-sm font-semibold text-blue-950"
+      >
+        Nombre y apellido
       </label>
       <input
-        id="nombre"
-        name="nombre"
+        id="nombre_contacto"
+        name="nombre_contacto"
         type="text"
-        placeholder="Ingresa tu nombre"
+        minlength="2"
+        maxlength="100"
         required
+        placeholder="Como quieres que te llamemos"
         class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
       />
     </div>
 
-
     <div>
-      <label for="apellidos" class="block mb-2 text-blue-950 text-sm font-semibold ">
-        Apellidos
+      <label
+        for="email_contacto"
+        class="block mb-2 text-sm font-semibold text-blue-950"
+      >
+        Email
       </label>
       <input
-        id="apellidos"
-        name="apellidos"
-        type="text"
-        placeholder="Ingresa tus apellidos"
-        required
-        class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-      />
-    </div>
-
-
-    <div>
-      <label for="email" class="block mb-2 text-blue-950 text-sm font-semibold">
-        Correo electrónico
-      </label>
-      <input
-        id="email"
-        name="email"
+        id="email_contacto"
+        name="email_contacto"
         type="email"
-        placeholder="ejemplo@correo.com"
+        maxlength="150"
         required
+        placeholder="tu@email.com"
         class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
       />
     </div>
 
-
     <div>
-      <label for="telefono" class="block mb-2 text-blue-950 text-sm font-semibold ">
-        Número de teléfono
+      <label
+        for="telefono"
+        class="block mb-2 text-sm font-semibold text-blue-950"
+      >
+        Teléfono
       </label>
       <input
         id="telefono"
         name="telefono"
         type="tel"
-        placeholder="999 999 999"
-        pattern="[0-9]{9}"
+        maxlength="30"
         required
+        placeholder="+54 11 5555-0000"
         class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
       />
     </div>
 
-
     <div>
-      <label for="servicio" class="block mb-2 text-sm font-semibold text-blue-950">
+      <label
+        for="servicio_id"
+        class="block mb-2 text-sm font-semibold text-blue-950"
+      >
         Servicio
       </label>
       <select
-        id="servicio"
-        name="servicio"
+        id="servicio_id"
+        name="servicio_id"
         required
         class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
       >
         <option value="">Selecciona un servicio</option>
-        <option>Ortodoncia</option>
-        <option>Odontología estética</option>
-        <option>Implantología y rehabilitación oral</option>
-        <option>Odontopediatría</option>
+        {
+          listServicios.map((servicio) => (
+            <option value={servicio.id}>{servicio.nombre}</option>
+          ))
+        }
       </select>
     </div>
-
 
     <div>
       <label for="fecha" class="block mb-2 text-sm font-semibold text-blue-950">
@@ -112,11 +106,36 @@
       />
     </div>
 
+    <div>
+      <label for="hora" class="block mb-2 text-sm font-semibold text-blue-950">
+        Hora
+      </label>
+      <input
+        id="hora"
+        name="hora"
+        type="time"
+        required
+        class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+      />
+    </div>
+
+    <div>
+      <label
+        for="notas"
+        class="block mb-2 text-sm font-semibold text-blue-950"
+      >
+        Notas <span class="font-normal text-slate-400">(opcional)</span>
+      </label>
+      <textarea
+        id="notas"
+        name="notas"
+        rows="3"
+        maxlength="500"
+        placeholder="Cuéntanos algún detalle importante"
+        class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+      ></textarea>
+    </div>
   </div>
-
-
-
-
 
   <div class="mt-7">
     <button
@@ -127,10 +146,69 @@
     </button>
   </div>
 
+  <p id="mensaje-reserva" class="mt-4 text-center text-sm font-medium text-emerald-700"
+    role="status" aria-live="polite"></p>
 
-
+  <p id="error-reserva" class="mt-4 text-center text-sm font-medium text-red-600 hidden"></p>
 
   <p class="mt-4 text-center text-xs text-slate-400">
     Nos comunicaremos contigo para confirmar tu cita.
   </p>
 </form>
+
+<script>
+  // Se ejecuta en el navegador: crea la reserva con los datos de contacto
+  // del paciente. Si hay sesión se adjunta el token (la reserva queda
+  // vinculada a su usuario); sin sesión se reserva igual, sin token.
+  import { crearReserva, getToken } from "../api/consulta";
+
+  const formulario = document.getElementById("form-reserva") as HTMLFormElement;
+  const mensaje = document.getElementById("mensaje-reserva") as HTMLParagraphElement;
+  const errorEl = document.getElementById("error-reserva") as HTMLParagraphElement;
+  const botonSubmit = formulario.querySelector("button[type='submit']") as HTMLButtonElement;
+
+  function mostrarError(texto: string) {
+    errorEl.textContent = texto;
+    errorEl.classList.remove("hidden");
+  }
+
+  function ocultarMensajes() {
+    errorEl.classList.add("hidden");
+    mensaje.textContent = "";
+  }
+
+  formulario.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    ocultarMensajes();
+
+    const servicio = formulario.querySelector("#servicio_id") as HTMLSelectElement;
+    const fecha = formulario.querySelector("#fecha") as HTMLInputElement;
+    const hora = formulario.querySelector("#hora") as HTMLInputElement;
+    const nombre = (formulario.querySelector("#nombre_contacto") as HTMLInputElement).value.trim();
+    const email = (formulario.querySelector("#email_contacto") as HTMLInputElement).value.trim();
+    const telefono = (formulario.querySelector("#telefono") as HTMLInputElement).value.trim();
+    const notas = (formulario.querySelector("#notas") as HTMLTextAreaElement).value.trim();
+
+    botonSubmit.disabled = true;
+    botonSubmit.textContent = "Reservando...";
+
+    try {
+      await crearReserva(getToken(), {
+        servicio_id: Number(servicio.value),
+        fecha_hora: `${fecha.value}T${hora.value}`,
+        nombre_contacto: nombre,
+        email_contacto: email,
+        telefono,
+        notas: notas || undefined,
+      });
+
+      formulario.reset();
+      mensaje.textContent = "¡Reserva creada! Te confirmaremos la cita a la brevedad.";
+    } catch (error) {
+      mostrarError(error.status ? error.message : "No se pudo conectar con el servidor");
+    } finally {
+      botonSubmit.disabled = false;
+      botonSubmit.textContent = "Solicitar cita";
+    }
+  });
+</script>

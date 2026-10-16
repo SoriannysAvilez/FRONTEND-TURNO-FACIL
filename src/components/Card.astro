@@ -1,6 +1,8 @@
 ---
+import Diente from './Icons/Diente.astro';
+
 interface Props {
-    imagen: string;
+    imagen?: string;
     titulo: string;
     nombre:string;
     descripcion: string;
@@ -13,11 +15,17 @@ const { imagen, titulo, nombre, descripcion } = Astro.props;
 
     
     <div class="h-48 w-full overflow-hidden bg-gray-100">
-        <img
-            src={imagen}
-            alt={titulo}
-            class="h-full w-full object-cover"
-        />
+        {imagen ? (
+            <img
+                src={imagen}
+                alt={titulo}
+                class="h-full w-full object-cover"
+            />
+        ) : (
+            <div class="flex h-full w-full items-center justify-center bg-gray-50 [&>svg]:h-24 [&>svg]:w-24">
+                <Diente />
+            </div>
+        )}
     </div>
 
     
