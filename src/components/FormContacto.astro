@@ -1,26 +1,25 @@
+---
+import { servicios } from "../api/consulta";
 
-<form class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-blue-100 p-6 md:p-8">
+const listServicios = servicios.datos;
+---
 
-
+<form
+  class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-blue-100 p-6 md:p-8"
+>
   <div class="mb-7 text-center">
-    <h2 class="text-blue-900 md:text-3xl font-bold ">
-      Reserva tu cita
-    </h2>
+    <h2 class="text-blue-900 md:text-3xl font-bold">Reserva tu cita</h2>
     <p class="mt-2 text-sm text-slate-500">
       Completa tus datos y nos pondremos en contacto contigo
     </p>
   </div>
 
-
-
-
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-
-
-
     <div>
-      <label for="nombre" class="block mb-2 text-blue-950 text-sm font-semibold ">
+      <label
+        for="nombre"
+        class="block mb-2 text-blue-950 text-sm font-semibold"
+      >
         Nombre
       </label>
       <input
@@ -33,9 +32,11 @@
       />
     </div>
 
-
     <div>
-      <label for="apellidos" class="block mb-2 text-blue-950 text-sm font-semibold ">
+      <label
+        for="apellidos"
+        class="block mb-2 text-blue-950 text-sm font-semibold"
+      >
         Apellidos
       </label>
       <input
@@ -47,7 +48,6 @@
         class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
       />
     </div>
-
 
     <div>
       <label for="email" class="block mb-2 text-blue-950 text-sm font-semibold">
@@ -63,9 +63,11 @@
       />
     </div>
 
-
     <div>
-      <label for="telefono" class="block mb-2 text-blue-950 text-sm font-semibold ">
+      <label
+        for="telefono"
+        class="block mb-2 text-blue-950 text-sm font-semibold"
+      >
         Número de teléfono
       </label>
       <input
@@ -79,9 +81,11 @@
       />
     </div>
 
-
     <div>
-      <label for="servicio" class="block mb-2 text-sm font-semibold text-blue-950">
+      <label
+        for="servicio"
+        class="block mb-2 text-sm font-semibold text-blue-950"
+      >
         Servicio
       </label>
       <select
@@ -91,13 +95,13 @@
         class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
       >
         <option value="">Selecciona un servicio</option>
-        <option>Ortodoncia</option>
-        <option>Odontología estética</option>
-        <option>Implantología y rehabilitación oral</option>
-        <option>Odontopediatría</option>
+        {
+          listServicios.map((element) => (
+            <option>{element.nombre}</option>
+          ))
+        }
       </select>
     </div>
-
 
     <div>
       <label for="fecha" class="block mb-2 text-sm font-semibold text-blue-950">
@@ -111,12 +115,7 @@
         class="w-full rounded-lg border border-blue-100 bg-blue-50/30 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
       />
     </div>
-
   </div>
-
-
-
-
 
   <div class="mt-7">
     <button
@@ -126,9 +125,6 @@
       Solicitar cita
     </button>
   </div>
-
-
-
 
   <p class="mt-4 text-center text-xs text-slate-400">
     Nos comunicaremos contigo para confirmar tu cita.
